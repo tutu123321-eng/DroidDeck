@@ -50,7 +50,9 @@ class SystemVulkanSelectionTest {
         assertTrue(env.contains("DROIDDECK_SYSTEM_VULKAN_GPU=mali"))
         assertTrue(env.contains("DROIDDECK_SYSTEM_VULKAN_RUNTIME=/runtime"))
         assertFalse(env.any { it.startsWith("DROIDDECK_POWERVR_RUNTIME=") })
-        assertTrue(env.contains("BL_GAMESCOPE_BACKEND=sdl"))
+        // Mali keeps gamescope on its native Wayland backend: the SDL backend asks SDL
+        // for a Vulkan surface before the WSI layer is available.
+        assertTrue(env.contains("BL_GAMESCOPE_BACKEND=wayland"))
         assertTrue(env.contains("VK_INSTANCE_LAYERS=VK_LAYER_HYBRIS_compat"))
         assertFalse(env.any { it.startsWith("BL_POWERVR_") || it.startsWith("BL_STEAM_GL_PRESENT=") })
         assertFalse(env.any { it.startsWith("BL_STEAM_CEF_SOFTWARE=") })
