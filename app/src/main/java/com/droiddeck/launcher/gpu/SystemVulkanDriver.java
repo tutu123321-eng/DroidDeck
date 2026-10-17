@@ -371,7 +371,9 @@ public final class SystemVulkanDriver {
         if (selected.softwareSteamCef)
             environment.add("BL_STEAM_CEF_SOFTWARE=1");
         // The outer compositor always uses Android-buffer Wayland presentation.
-        environment.add("BL_GAMESCOPE_BACKEND=sdl");
+        // Mali goes through the same Wayland compositor the desktop uses; the SDL
+        // backend asks SDL for a Vulkan surface before the WSI layer is up.
+        environment.add("BL_GAMESCOPE_BACKEND=" + (selected == Profile.MALI ? "wayland" : "sdl"));
         if (selected.requiresRenderNode) {
             // The DRM preload confirms the pvr driver before emulating handles. Both render-node
             // profiles use the managed WSI layer for Steam instead of the broken plain DRI3 path.
