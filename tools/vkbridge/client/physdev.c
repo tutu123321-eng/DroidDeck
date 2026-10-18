@@ -133,7 +133,8 @@ uint32_t vkb_mem_bits_to_client(vkb_physdev *pd, uint32_t server_bits, int allow
          * for an image or a buffer fails in vkAllocateMemory. XRing O3 / Mali-G2-Ultra-NX lists
          * nothing but lazily allocated and protected device-local types, so exposing them leaves
          * the application no usable type at all (seen as gamescope "findMemoryType failed"). */
-        if (pd->client_mem.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT)
+        if (pd->client_mem.memoryTypes[i].propertyFlags &
+            (VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT | VK_MEMORY_PROPERTY_PROTECTED_BIT))
             continue;
         bits |= 1u << i;
     }
