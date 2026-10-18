@@ -147,7 +147,18 @@ VKAPI_ATTR void VKAPI_CALL vkb_ep_vkDestroyImage(VkDevice device, VkImage image,
 
 static void fix_reqs(vkb_device *dev, VkMemoryRequirements *r, int allow_shared)
 {
-    r->memoryTypeBits = vkb_mem_bits_to_client(dev->pd, r->memoryTypeBits, allow_shared);
+    uint32_t bits = vkb_mem_bits_to_client(dev->pd, r->memoryTypeBits, allow_shared);
+    if (!bits && !allow_shared) {
+        /* Some drivers (XRing O3 / Mali-G2-Ultra-NX) offer images only a type the client
+         * classified as shared, so filtering the shared types out leaves an empty mask and
+         * every image allocation then fails with "no memory type for the image". Fall back to
+         * the shared types instead of handing the application a mask it cannot use. */
+        static int told;
+        bits = vkb_mem_bits_to_client(dev->pd, r->memoryTypeBits, 1);
+        if (bits && __atomic_fetch_add(&told, 1, __ATOMIC_RELAXED) < 8)
+            VKB_WARN("requirements: no non-shared type for this resource, using shared types 0x%x", bits);
+    }
+    r->memoryTypeBits = bits;
 }
 
 static int buffer_shareable(vkb_device *dev, VkBuffer b)

@@ -110,6 +110,16 @@ static void build_memory_model(vkb_physdev *pd)
     for (uint32_t i = 0; i < nc; i++)
         VKB_DBG("memory type %u: flags 0x%x heap %u -> server type %u%s", i, c->memoryTypes[i].propertyFlags,
                 c->memoryTypes[i].heapIndex, pd->type_map[i].server_type, pd->type_map[i].shared ? " (shared)" : "");
+    /* One warning with the whole table: a failing device report cannot be diagnosed without it. */
+    {
+        char line[640];
+        int n = 0;
+        for (uint32_t i = 0; i < nc && n < (int)sizeof(line) - 32; i++)
+            n += snprintf(line + n, sizeof(line) - (size_t)n, " %u:0x%x/s%u%s", i,
+                          c->memoryTypes[i].propertyFlags, pd->type_map[i].server_type,
+                          pd->type_map[i].shared ? "S" : "");
+        VKB_ONCE(VKB_LOG_WARN, "memory: client types (index:flags/server_type[%s]):%s", "S=shared", line);
+    }
 }
 
 uint32_t vkb_mem_bits_to_client(vkb_physdev *pd, uint32_t server_bits, int allow_shared)
