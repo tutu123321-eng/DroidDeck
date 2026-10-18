@@ -124,11 +124,24 @@ static void build_memory_model(vkb_physdev *pd)
 
 uint32_t vkb_mem_bits_to_client(vkb_physdev *pd, uint32_t server_bits, int allow_shared)
 {
-    uint32_t bits = 0;
+    uint32_t bits = 0, fallback = 0;
     for (uint32_t i = 0; i < pd->client_mem.memoryTypeCount; i++) {
         if (!(server_bits & (1u << pd->type_map[i].server_type))) continue;
+        fallback |= 1u << i;
         if (pd->type_map[i].shared && !allow_shared) continue;
+        /* A lazily allocated type is for transient attachments only: an application that picks it
+         * for an image or a buffer fails in vkAllocateMemory. XRing O3 / Mali-G2-Ultra-NX lists
+         * nothing but lazily allocated and protected device-local types, so exposing them leaves
+         * the application no usable type at all (seen as gamescope "findMemoryType failed"). */
+        if (pd->client_mem.memoryTypes[i].propertyFlags & VK_MEMORY_PROPERTY_LAZILY_ALLOCATED_BIT)
+            continue;
         bits |= 1u << i;
+    }
+    if (!bits && fallback) {
+        static int told;
+        if (__atomic_fetch_add(&told, 1, __ATOMIC_RELAXED) < 8)
+            VKB_WARN("requirements: only lazily allocated/protected types offered, falling back to 0x%x", fallback);
+        bits = fallback;
     }
     return bits;
 }
