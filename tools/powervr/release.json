@@ -719,7 +719,7 @@
       "tools/hybris/patches/0007-clip-pipeline-contract.patch": "4018a569d7894d6253a12fa74daf5492758d36fb8c080d45118c408669a656be",
       "tools/hybris/patches/0008-bc-push-descriptors.patch": "21fce09f3e8f1527669f3151f10b426a50029703e022f047843864598329ae0f",
       "tools/hybris/powervr-hal-version.patch": "d3ed8ca03e5a874b9dc46651983117760c7490b96127335625d0480a2b85e66f",
-      "tools/hybris/source.env": "2ac2efded7b03982f7ea52eff75fefc867ba0d4737c70f1a63ad8e1dab74dca5"
+      "tools/hybris/source.env": "139a3086c1aefa21ed6c3b793cfd04fa5cd733be8a9a40d3c1f38c20533fdae6"
     },
     "sha256": "e0d6d8983d2c82173bdd6c03a182779cca450374f1a68d2b117a07b9f792afc8",
     "size": 5787495,
