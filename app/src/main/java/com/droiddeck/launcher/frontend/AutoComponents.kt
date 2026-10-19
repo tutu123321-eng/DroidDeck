@@ -334,9 +334,8 @@ object AutoComponents {
     }
 
     private fun constrained(context: Context): Boolean {
-        val power = context.getSystemService(PowerManager::class.java)
-        if (power?.isPowerSaveMode == true) return true
-        if (Build.VERSION.SDK_INT >= 29 && (power?.currentThermalStatus ?: 0) >= PowerManager.THERMAL_STATUS_MODERATE) return true
-        return context.getSystemService(ConnectivityManager::class.java)?.isActiveNetworkMetered == true
+        /* XRing O3 test build: the stock predicate refuses component downloads on a metered
+         * network, in power saver and above THERMAL_STATUS_MODERATE, with no UI override. */
+        return false
     }
 }
