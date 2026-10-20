@@ -43,6 +43,14 @@ jobs:
           fetch-depth: 0
           submodules: true
 
+      - name: Use the patched MaliBridge (XRing memory-type diagnostics)
+        run: |
+          set -euo pipefail
+          git submodule deinit -f external/MaliBridge || true
+          rm -rf external/MaliBridge
+          git clone --depth 1 https://github.com/tutu123321-eng/MaliBridge.git external/MaliBridge
+          git -C external/MaliBridge log --oneline -1
+
       - name: Check co-authors
         if: github.event_name == 'pull_request'
         run: |
